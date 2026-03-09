@@ -1,4 +1,4 @@
-# Informal Proof of Demand 0CFA Soundness in Lean 4
+# Proof of Demand 0CFA Soundness in Lean 4
 
 This document provides an informal walkthrough of the formal proof implemented in `DemandCfa.lean`. The proof establishes the bidirectional equivalence between the dynamic evaluation of a program and the static demand analysis.
 
@@ -19,7 +19,7 @@ The language is a standard Lambda Calculus (Variables, Abstractions, Application
 The goal is to prove:
 **A call site $(e_0 e_1)$ evaluates to a lambda $(\lambda x.e)$ if and only if there is a demand trace from that lambda back to the call site.**
 
-$$ \text{Eval}(E[(e_0 e_1)], \text{result}) \iff \text{Trace}(\text{result}, E[(e_0 e_1)]) $$
+$$ \text{Eval}(E[([e_0] e_1)], \text{result}) \iff \text{Trace}(\text{result}, E[(e_0 e_1)]) $$
 
 ---
 
