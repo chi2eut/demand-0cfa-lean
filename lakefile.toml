@@ -1,0 +1,10 @@
+name = "DemandCfa"
+version = "0.1.0"
+defaultTargets = ["demandcfa"]
+
+[[lean_lib]]
+name = "DemandCfa"
+
+[[lean_exe]]
+name = "demandcfa"
+root = "Main"

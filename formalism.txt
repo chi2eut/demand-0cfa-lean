@@ -1,0 +1,135 @@
+Demand 0CFA formalism
+
+Language
+——————————————————————————————
+
+Expression
+e := x [Ref]
+   | λx.e [Lam]
+   | (e e) [App]
+
+x ∈ Var
+
+Context
+C := (C e) [Fun]
+   | (e C) [Arg]
+   | λx.C [Bod]
+
+csr ∈ Cursor := Context × Expr
+
+C[e] is a notation for cursor, where C is the context and e is an target expression that is focused in the expression.
+This notation can be composed where for example, C[([e₀] e₁)] means expression is e₀ and the context is composed with the outer context C and the inner context (C e₁) that forms the whole context around e₀.
+
+Big step relation
+————————————————————————————
+
+⇓ev [Eval] : Cursor × Cursor
+⇒tr [Trace] : Cursor × Cursor
+⇑f [Find] : Var × Cursor × Cursor
+⇑b [Bind] : Var × Cursor × Cursor
+
+EVAL
+
+[Eval-Lam]
+
+
+——————————————————————
+E[λx.e] ⇓ev E[λx.e]
+
+[Eval-App]
+
+E[([e₀] e₁)] ⇓ev E₀[λx.e]
+E₀[λx.[e]] ⇓ev csr
+——————————————————————
+E[(e₀ e₁)] ⇓ev csr
+
+[Eval-Ref]
+
+x, E[x] ⇑b E₀[λx.[e]]
+E₀[λx.e] ⇒tr E′[(e₀ e₁)]
+E′[(e₀ [e₁])] ⇓ev csr
+——————————————————————
+E[x] ⇓ev csr
+
+TRACE
+
+[Trace-Fun]
+
+
+——————————————————————
+E[([e₀] e₁)] ⇒tr E[(e₀ e₁)]
+
+[Trace-Arg]
+
+E[([e₀] e₁)] ⇓ev E₀[λx.e]
+x, E₀[λx.[e]] ⇑f Eₓ[x]
+Eₓ[x] ⇒tr csr
+——————————————————————
+E[(e₀ [e₁])] ⇒tr csr
+
+[Trace-Bod]
+
+E[λx.e] ⇒tr csr₀
+csr₀ ⇒tr csr
+——————————————————————
+E[(λx.[e])] ⇒tr csr
+
+BIND
+
+[Bind-Fun]
+
+x, E[(e₀ e₁)] ⇑b csr
+——————————————————————
+x, E[([e₀] e₁)] ⇑b csr
+
+[Bind-Arg]
+
+x, E[(e₀ e₁)] ⇑b csr
+——————————————————————
+x, E[(e₀ [e₁])] ⇑b csr
+
+[Bind-Bod-Match]
+
+
+——————————————————————
+x, E[λx.[e]] ⇑b E[λx.[e]]
+
+[Bind-Bod-No-Match]
+
+x ≠ y
+x, E[λy.e] ⇑b csr
+——————————————————————
+x, E[λy.[e]] ⇑b csr
+
+FIND
+
+[Find-Ref]
+
+
+——————————————————————
+x, E[x] ⇑f E[x]
+
+[Find-Lam]
+
+x ≠ y
+x, E[λy.[e]] ⇑f csr
+——————————————————————
+x, E[λy.e] ⇑f csr
+
+[Find-App-Fun]
+
+x, E[([e₀] e₁)] ⇑f csr
+——————————————————————
+x, E[(e₀ e₁)] ⇑f csr
+
+[Find-App-Arg]
+
+x, E[(e₀ [e₁])] ⇑f csr
+——————————————————————
+x, E[(e₀ e₁)] ⇑f csr
+
+
+
+Theorem to Prove:
+
+E[([e₀] e₁)] ⇓ev E₀[λx.e] ↔ E₀[λx.e] ⇒tr E[(e₀ e₁)]
